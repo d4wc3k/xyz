@@ -1,0 +1,91 @@
+================================================================
+
+manuals:
+ttps://blag.felixhummel.de/admin/usb_xubuntu.html
+
+https://linux-sunxi.org/Debootstrap
+
+https://gist.github.com/varqox/42e213b6b2dde2b636ef
+
+https://arraybolt3.substack.com/p/making-hyper-minimal-ubuntu-virtual
+
+https://community.netcup.com/en/tutorials/debootstrap
+
+
+https://semjonov.de/posts/2021-09/minimal-ubuntu-installation-with-debootstrap/
+
+https://gist.github.com/subrezon/9c04d10635ebbfb737816c5196c8ca24
+
+https://github.com/myTerminal/dotfiles/blob/master/.setup/docs/install-debian.md
+
+https://raw.githubusercontent.com/IanLeCorbeau/dotfiles/master/debstrap_in_chroot.sh
+
+
+================================================================
+Mirror:
+https://ftp.icm.edu.pl/pub/Linux/ubuntu
+========================================
+debootstrap command:
+debootstrap --verbose --arch=amd64 noble /target https://ftp.icm.edu.pl/pub/Linux/ubuntu
+==========================================================================================================
+apt source lists
+##
+#
+## noble
+deb https://ftp.icm.edu.pl/pub/Linux/ubuntu noble main multiverse restricted universe
+#
+## noble-backports
+deb https://ftp.icm.edu.pl/pub/Linux/ubuntu noble-backports main multiverse restricted universe
+#
+## noble-security
+deb https://ftp.icm.edu.pl/pub/Linux/ubuntu noble-security main multiverse restricted universe
+#
+## noble-updates
+deb https://ftp.icm.edu.pl/pub/Linux/ubuntu noble-updates main multiverse restricted universe
+#
+##
+==================================
+apt ignore preferences
+path: /target/etc/apt/preferences.d/ignored-packages
+
+content of file:
+
+Package: snapd cloud-init landscape-common popularity-contest ubuntu-advantage-tools
+Pin: release *
+Pin-Priority: -1
+
+==================================
+Mounting additional FS: 
+
+mount --make-rslave --rbind /proc /target/proc
+mount --make-rslave --rbind /sys /target/sys
+mount --make-rslave --rbind /dev /target/dev
+mount --make-rslave --rbind /run /target/run
+
+====================================
+Chroot
+chroot /target /bin/bash -l
+====================================
+set PS1 for chroot
+===================================
+export PS1="|chroot| ${PS1}"
+===================================
+dpkg-reconfigure tzdata
+dpkg-reconfigure locales
+dpkg-reconfigure keyboard-configuration
+============
+kernel+tools
+=========
+hostname
+hosts
+==========
+user
+=========
+fstab,crypttab
+blkid -s UUID -o value
+=============
+network
+=============
+bootloader
+
+
