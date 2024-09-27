@@ -1,0 +1,18 @@
+###################################################################################################
+##												  #
+## noble											  #
+deb http://pl.archive.ubuntu.com/ubuntu noble main multiverse restricted universe		  #
+#												  #	
+## noble-backports										  #
+deb http://pl.archive.ubuntu.com/ubuntu noble-backports main multiverse restricted universe	  #
+#												  #
+## noble-security										  #
+deb http://pl.archive.ubuntu.com/ubuntu noble-security main multiverse restricted universe	  #
+#												  #
+## noble-updates										  #
+deb http://pl.archive.ubuntu.com/ubuntu noble-updates main multiverse restricted universe	  #
+#												  #
+## noble-proposed										  #
+deb http://pl.archive.ubuntu.com/ubuntu noble-proposed main multiverse restricted universe	  #
+##												  #
+###################################################################################################
