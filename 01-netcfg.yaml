@@ -1,0 +1,25 @@
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      critical: true
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      nameservers:
+        search: [dsadsafdsd]
+        addresses: [9.9.9.11,149.112.112.11]
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      critical: true
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      nameservers:
+        search: [home]
+        addresses: [9.9.9.11,149.112.112.11]
+        addresses: [208.67.222.222, 208.67.220.220]
