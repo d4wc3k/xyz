@@ -1,0 +1,20 @@
+#################################################################################################################################
+##																#
+#<file system>					<mount point>	<type>	<options>			<dump>	<pass>		#
+## root																#
+UUID=effba5dc-1da7-4e19-8b36-ffbc033c6ed4	/         	ext4	errors=remount-ro		0	1		#
+#																#
+## boot																#
+UUID=7794c5c6-570e-4ea9-b2fd-f218cd7fe678	/boot		ext2	defaults			0	2		#
+#																#
+## efi																#
+UUID=25A5-03B2					/boot/efi 	vfat	umask=0077			0	1		#
+#																#
+## home																#
+UUID=0bfc47ff-8ab8-4286-9551-80e1b7d7eaa7	/home     	ext4	defaults			0	2		#
+#																#
+## swap																#
+UUID=56ece0ce-fe20-4628-a736-5e55ba784f30	none		swap	sw				0	0		#
+#																#
+##																#
+#################################################################################################################################
