@@ -1,0 +1,5 @@
+cryptsetup --debug --type luks2 -v --verify-passphrase --cipher aes-xts-plain64 --key-size 512 --key-slot 0  --key-description "Basic key" --hash sha256 --iter-time 10654 --pbkdf argon2id  --pbkdf-memory 524288 --pbkdf-parallel 4 --use-random --label test-locked --timeout 30 --integrity  hmac-sha256 luksFormat /dev/loop0
+
+
+
+cryptsetup benchmark --debug  --cipher aes-xts-plain64 --hash sha256 --iter-time 10654 --key-size 512  --pbkdf argon2id --pbkdf-memory 1048576 --pbkdf-parallel 4
