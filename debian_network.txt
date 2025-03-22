@@ -1,0 +1,13 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# Include files from /etc/network/interfaces.d:
+source /etc/network/interfaces.d/*
+## loopback
+#
+auto lo
+iface lo inet loopback
+#
+## ens33
+auto ens33
+allow-hotplug eth0
+iface ens33 inet dhcp
+#
