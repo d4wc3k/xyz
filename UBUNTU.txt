@@ -1,7 +1,9 @@
 ================================================================
 
 manuals:
-ttps://blag.felixhummel.de/admin/usb_xubuntu.html
+https://morfikov.github.io/post/instalacja-debiana-z-wykorzystaniem-debootstrap/
+
+https://blag.felixhummel.de/admin/usb_xubuntu.html
 
 https://linux-sunxi.org/Debootstrap
 
