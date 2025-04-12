@@ -1,0 +1,192 @@
+1) install needed tools in live enviroment -> gdisk,debootstrap,arch-install,scripts end others
+
+2) Create partition table with gdisk.
+
+3) format and open encrypted LVM 
+Commands: 
+a) cryptsetup --debug --type luks2 -v --verify-passphrase --cipher aes-xts-plain64 --key-size 512 --key-slot 0  --key-description "Main Key..." --hash sha256 --iter-time 10654 --pbkdf argon2id  --pbkdf-memory 524288 --pbkdf-parallel 4 --use-random --label lvm-locked --timeout 30 luksFormat /dev/sda3
+b) cryptsetup open /dev/sda3 lvm-unlocked
+
+4) Configure LVM -> pvcreate,vgcreate,lvcreate.
+
+5) create intall target dir
+Command: mkdir -p /target
+
+6) format and mount partitions
+
+7) Perform debootstrap base install
+debootstrap --verbose --arch=amd64 noble /target https://ftp.uni-stuttgart.de/ubuntu
+
+8) Configure apt for new system
+a) sources list
+vim /target/etc/apt/sources.list
+
+Content:
+#######################################################################################################################
+##														      #
+## noble													      #
+deb http://ftp.uni-stuttgart.de/ubuntu/ noble main multiverse restricted universe				      #
+# deb-src http://ftp.uni-stuttgart.de/ubuntu/ noble main multiverse restricted universe				      #
+#														      #	
+## noble-backports												      #
+deb http://ftp.uni-stuttgart.de/ubuntu/ noble-backports main multiverse restricted universe			      #
+# deb-src http://ftp.uni-stuttgart.de/ubuntu noble-backports main multiverse restricted universe		      #
+#														      #
+## noble-security												      #
+deb http://ftp.uni-stuttgart.de/ubuntu noble-security main multiverse restricted universe			      #
+# deb-src http://ftp.uni-stuttgart.de/ubuntu noble-security main multiverse restricted universe		      #
+#														      #
+## noble-updates												      #
+deb http://ftp.uni-stuttgart.de/ubuntu noble-updates main multiverse restricted universe			      #
+# deb-src http://ftp.uni-stuttgart.de/ubuntu noble-updates main multiverse restricted universe			      #
+#														      #
+## noble-proposed												      #
+deb http://ftp.uni-stuttgart.de/ubuntu noble-proposed main multiverse restricted universe			      #
+# deb-src http://ftp.uni-stuttgart.de/ubuntu noble-proposed main multiverse restricted universe		      #
+##														      #
+#######################################################################################################################
+
+
+
+b) apt preferences
+vim /target/etc/apt/apt.conf
+
+APT::Install-Recommends "false";
+APT::Install-Suggests "false";
+APT::AutoRemove::RecommendsImportant "false";
+APT::AutoRemove::SuggestsImportant "false";
+
+c) apt ignored packages
+vim /target/etc/apt/preferences.d/ignored-packages
+
+content of file:
+
+Package: snapd cloud-init landscape-common popularity-contest ubuntu-advantage-tools
+Pin: release *
+Pin-Priority: -1
+
+9) Mount additional Filesystems and perform chroot
+
+mount --make-rslave --rbind /proc /target/proc
+mount --make-rslave --rbind /sys /target/sys
+mount --make-rslave --rbind /dev /target/dev
+mount --make-rslave --rbind /run /target/run
+mount --make-rslave --rbind /sys/firmware/efi/efivars /target/sys/firmware/efi/efivars
+
+chroot /target /bin/bash -l
+export PS1="|chroot| ${PS1}"
+
+10) Update the system and install bash-completion package.
+
+11) configure locale,keyboard,timezone,language
+
+a) apt install locales console-setup keyboard-configuration tzdata kbd
+
+b) dpkg-reconfigure locales
+
+c) dpkg-reconfigure keyboard-configuration
+
+d) dpkg-reconfigure console-setup
+
+e) dpkg-reconfigure tzdata
+
+f)
+source /etc/profile
+export PS1="|chroot| ${PS1}"
+
+12) Install kernel+tools
+
+apt install linux-image-generic linux-headers-generic linux-firmware initramfs-tools cryptsetup cryptsetup-initramfs lvm2 man-db manpages manpages-pl
+
+13) Set hostname and set hosts
+
+14) configure user and sudo
+
+15) 
+apt install sudo
+useradd -m -G users,sudo -s /bin/bash -c "Kierownik" kierownik
+passwd kierownik
+passwd -l root
+
+16) configure fstab
+blkid -s UUID -o value $DEV
+
+Example content of fstab
+#################################################################################################################################
+##																#
+#<file system>					<mount point>	<type>	<options>			<dump>	<pass>		#
+## root																#
+UUID=4ccc9813-1da3-4c94-b705-0df806a5a284	/         	ext4	errors=remount-ro		0	1		#
+#																#
+## boot																#
+UUID=81b6ecf6-102f-4661-8896-d50044de8b78	/boot		ext2	defaults			0	2		#
+#																#
+## efi																#
+UUID=7670-5CB8					/boot/efi 	vfat	umask=0077			0	1		#
+#																#
+## home																#
+# UUID=	/home     	ext4	defaults			0	2		#
+#																#
+## swap																#
+UUID=2e161b57-1af3-496c-8b24-79bfde2ebcfa	none		swap	sw				0	0		#
+#																#
+##																#
+#################################################################################################################################
+
+17) configure crypttab
+
+Example crypttab:
+# <target name> <source device>                                 <key file>      <options>
+lvm-unlocked    UUID=59c014bc-866c-4e50-962b-d9b789262169       none            luks,discard
+
+18) Configure network
+
+apt install network-manager
+
+vim /etc/netplan/01-netcfg.yaml
+
+
+Example netplan config:
+#
+netplan:
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    enp0s31f6:
+      critical: false
+      optional: true
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      nameservers:
+        search: [home]
+        addresses: [9.9.9.11,149.112.112.11]
+        addresses: [208.67.222.222, 208.67.220.220]
+  wifis:
+    wlp3s0:
+      critical: false
+      optional: true
+      access-points:
+        "Devicyvy":
+          password: "aRzY363+88*!@"
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      nameservers:
+        search: [home]
+        addresses: [9.9.9.11,149.112.112.11]
+        addresses: [208.67.222.222, 208.67.220.220]
+
+
+19) install bootloader
+
+apt install grub-efi-amd64 efibootmgr
+
+grub-install --target=x86_64-efi --efi-directory=/boot/efi
+
+vim /etc/default/grub
+update-grub2
+update-initramfs -ck all;update-grub2
+
+
