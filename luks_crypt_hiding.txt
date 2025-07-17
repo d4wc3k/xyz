@@ -1,0 +1,29 @@
+## creating file container
+FILE_NAME="disk.bin";
+touch $FILE_NAME;
+SECTOR="512";
+SIZE_GB="5";
+DD_COUNT=$(echo "${SIZE_GB}*2^30/${SECTOR}" | bc);
+(dd if=/dev/random of="${FILE_NAME}" bs="$SECTOR" count="${DD_COUNT}" status=progress);
+#
+## creating loopback device with created earlier file container
+losetup -f
+losetup -P /dev/loop0 disk.bin
+## 
+create primary partition 2G with GDISK or parted
+#
+## format partition with ext4 or use cryptsetup with partition
+#
+## generate key
+dd if=/dev/random of=key bs=1K count=1024 status=progress && sync
+# create 'hidden' luks volume 2.5 GiB from container begin
+cryptsetup --header=head.bin --key-file=key --offset=5242880 luksFormat /dev/loop0 
+#
+## opening hiden luks 
+cryptsetup --key-file=key --header=head.bin open /dev/loop0 xyz
+#
+## format hiden luks with ext4
+mkfs.ext4 -L data1 /dev/mapper/xyz
+#
+
+LINK: https://blog.linuxbrujo.net/posts/plausible-deniability-with-luks/
