@@ -318,8 +318,6 @@ ____
 	exit
 	# deactivate swap
 	swapoff /dev/dm-2
-	# deactivate swap partition
-	swapoff /dev/dm-2
 	# umount all filesystems mounted at /target
 	#
 	umount /target/sys/firmware/efi/efivars
